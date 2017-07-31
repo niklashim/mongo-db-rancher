@@ -8,10 +8,11 @@ GIDDYUP=/opt/rancher/bin/giddyup
 
 function cluster_init {
 	sleep 10
+	MYNAME=$(hostname)
 	MYIP=$($GIDDYUP ip myip)
 	mongo --eval "printjson(rs.initiate())"
-	for member in $($GIDDYUP ip stringify --delimiter " "); do
-		if [ "$member" != "$MYIP" ]; then
+	for member in $($GIDDYUP service containers); do
+		if [ "$member" != "$MYNAME" ]; then
 			mongo --eval "printjson(rs.add('$member:27017'))"
 			sleep 5
 		fi
